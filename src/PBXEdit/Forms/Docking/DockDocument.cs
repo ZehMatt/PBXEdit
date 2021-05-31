@@ -12,12 +12,12 @@ namespace PBXEdit
     public partial class DockDocument : DarkUI.Docking.DarkDocument
     {
         public string File { get; set; }
-        string InitialContent;
-        bool modified;
-        Encoding FileEncoding;
 
-        static readonly Color BACK_COLOR = Color.FromArgb(255, 40, 40, 40);
-        static readonly Color FORE_COLOR = Color.FromArgb(255, 220, 220, 220);
+        private string InitialContent;
+        private bool modified;
+        private Encoding FileEncoding;
+        private static readonly Color BACK_COLOR = Color.FromArgb(255, 40, 40, 40);
+        private static readonly Color FORE_COLOR = Color.FromArgb(255, 220, 220, 220);
 
         public bool Modified { get => modified; }
 
@@ -49,12 +49,12 @@ namespace PBXEdit
             ClearModificationState();
         }
 
-        static Color IntToColor(int rgb)
+        private static Color IntToColor(int rgb)
         {
             return Color.FromArgb(255, (byte)(rgb >> 16), (byte)(rgb >> 8), (byte)rgb);
         }
 
-        Encoding GetEncoding(string filename)
+        private Encoding GetEncoding(string filename)
         {
             // Read the BOM
             var bom = new byte[4];
@@ -65,22 +65,39 @@ namespace PBXEdit
 
             // Analyze the BOM
             if (bom[0] == 0x2b && bom[1] == 0x2f && bom[2] == 0x76)
+            {
                 return Encoding.UTF7;
+            }
+
             if (bom[0] == 0xef && bom[1] == 0xbb && bom[2] == 0xbf)
+            {
                 return Encoding.UTF8;
+            }
+
             if (bom[0] == 0xff && bom[1] == 0xfe && bom[2] == 0 && bom[3] == 0)
+            {
                 return Encoding.UTF32; //UTF-32LE
+            }
+
             if (bom[0] == 0xff && bom[1] == 0xfe)
+            {
                 return Encoding.Unicode; //UTF-16LE
+            }
+
             if (bom[0] == 0xfe && bom[1] == 0xff)
+            {
                 return Encoding.BigEndianUnicode; //UTF-16BE
+            }
+
             if (bom[0] == 0 && bom[1] == 0 && bom[2] == 0xfe && bom[3] == 0xff)
+            {
                 return new UTF32Encoding(true, true);  //UTF-32BE
+            }
 
             return Encoding.ASCII;
         }
 
-        void MarkStateModified()
+        private void MarkStateModified()
         {
             if (TextBox.Text == InitialContent)
             {
@@ -92,14 +109,14 @@ namespace PBXEdit
             DockText = "* " + GetFileName(File);
         }
 
-        void ClearModificationState()
+        private void ClearModificationState()
         {
             modified = false;
             DockText = GetFileName(File);
             InitialContent = TextBox.Text;
         }
 
-        void InitSyntaxColoring()
+        private void InitSyntaxColoring()
         {
             // Configure the default style
             TextBox.StyleResetDefault();
@@ -164,7 +181,7 @@ namespace PBXEdit
             nums2.Mask = 0;
         }
 
-        void OnSizeChanged(object sender, EventArgs e)
+        private void OnSizeChanged(object sender, EventArgs e)
         {
             var tb = sender as ScintillaNET.Scintilla;
 
@@ -181,15 +198,17 @@ namespace PBXEdit
             tb.HScrollBar = (tS.Width + totalMargin + 200) >= tb.Width;
         }
 
-        string GetFileName(string file)
+        private string GetFileName(string file)
         {
             return System.IO.Path.GetFileName(file);
         }
 
-        void ReloadFileContents()
+        private void ReloadFileContents()
         {
             if (File == null || File.Length == 0)
+            {
                 return;
+            }
 
             try
             {
@@ -202,7 +221,7 @@ namespace PBXEdit
             }
         }
 
-        void OnInsertCheck(object sender, InsertCheckEventArgs e)
+        private void OnInsertCheck(object sender, InsertCheckEventArgs e)
         {
             if (e.Text.EndsWith("\n") || e.Text.EndsWith("\r\n"))
             {
@@ -219,7 +238,7 @@ namespace PBXEdit
             }
         }
 
-        void OnCharAdded(object sender, CharAddedEventArgs e)
+        private void OnCharAdded(object sender, CharAddedEventArgs e)
         {
             if (e.Char == 125 /* '}' */)
             {
@@ -244,7 +263,7 @@ namespace PBXEdit
             }
         }
 
-        void OnKeyDown(object sender, KeyEventArgs e)
+        private void OnKeyDown(object sender, KeyEventArgs e)
         {
             if (e.KeyCode == Keys.S && e.Control)
             {
@@ -253,8 +272,8 @@ namespace PBXEdit
             }
         }
 
-        const int SCI_SETLINEINDENTATION = 2126;
-        const int SCI_GETLINEINDENTATION = 2127;
+        private const int SCI_SETLINEINDENTATION = 2126;
+        private const int SCI_GETLINEINDENTATION = 2127;
 
         private void SetIndent(ScintillaNET.Scintilla scin, int line, int indent)
         {
@@ -277,7 +296,9 @@ namespace PBXEdit
             {
                 var result = DarkMessageBox.ShowWarning("You have unsaved changes, save before closing?", "Close", DarkDialogButton.YesNoCancel);
                 if (result == DialogResult.Cancel)
+                {
                     return;
+                }
 
                 if (result == DialogResult.Yes)
                 {

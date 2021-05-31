@@ -6,9 +6,9 @@ namespace PBXEdit
 {
     public partial class DlgAddFile : DarkUI.Forms.DarkForm
     {
-        PBX.File Project;
-        string[] Files;
-        PBXObject<PBXGroup> TargetGroup;
+        private PBX.File Project;
+        private string[] Files;
+        private PBXObject<PBXGroup> TargetGroup;
 
         public DlgAddFile(PBX.File project, string[] files, PBXObject<PBXGroup> group)
         {
@@ -20,81 +20,91 @@ namespace PBXEdit
             Populate(Project, files);
         }
 
-        void Populate(PBX.File Project, string[] files)
+        private void Populate(PBX.File projectFile, string[] files)
         {
-            var sourceRoot = Project.getSourceRoot();
-
             foreach (var file in files)
             {
                 fileList.Items.Add(new DarkUI.Controls.DarkListItem(file));
             }
 
-            var root = Project.getRoot();
-            if (root is PBXObject<PBXProject>)
+            if (projectFile.GetRoot() is PBXObject<PBXProject> proj)
             {
-                PopulateTargets(Project, root as PBXObject<PBX.PBXProject>);
+                PopulateTargets(projectFile, proj);
             }
         }
 
-        void PopulateTargets(PBX.File Project, PBXObject<PBXProject> root)
+        private void PopulateTargets(PBX.File projectFile, PBXObject<PBXProject> root)
         {
             foreach (var targetId in root.Value.targets)
             {
-                var buildTarget = Project.findObject(targetId);
-                if (buildTarget is PBXObject<PBXNativeTarget>)
+                if (projectFile.FindObject(targetId) is PBXObject<PBXNativeTarget> buildTarget)
                 {
-                    AddBuildTarget(buildTarget as PBXObject<PBXNativeTarget>);
+                    AddBuildTarget(buildTarget);
                 }
             }
         }
 
-        void AddBuildTarget(PBXObject<PBXNativeTarget> target)
+        private void AddBuildTarget(PBXObject<PBXNativeTarget> target)
         {
             var name = target.Value.name;
 
-            var targetEntry = new DarkUI.Controls.DarkListItem(name);
-            targetEntry.Tag = target;
+            var targetEntry = new DarkUI.Controls.DarkListItem(name)
+            {
+                Tag = target
+            };
 
             listTargets.Items.Add(targetEntry);
         }
 
-        static string ToPBXPath(string path)
+        private static string ToPBXPath(string path)
         {
             string res = path.Replace("\\", "/");
             if (res.StartsWith("/"))
+            {
                 return res.Substring(1);
+            }
+
             return res;
         }
 
-        static string GetFileType(string fileName)
+        private static string GetFileType(string fileName)
         {
             if (fileName.EndsWith(".cpp"))
+            {
                 return "sourcecode.cpp.cpp";
+            }
             else if (fileName.EndsWith(".c"))
+            {
                 return "sourcecode.c.c";
+            }
             else if (fileName.EndsWith(".hpp"))
+            {
                 return "sourcecode.cpp.h";
+            }
             else if (fileName.EndsWith(".h"))
+            {
                 return "sourcecode.c.h";
+            }
             else if (fileName.EndsWith(".txt"))
+            {
                 return "text";
+            }
             // Probably a bad idea.
             return "sourcecode.c.c";
         }
 
-        bool IsSourceFile(string file)
+        private bool IsSourceFile(string file)
         {
             return file.EndsWith(".cpp") || file.EndsWith(".c");
         }
 
-        void AddFileToTarget(PBXObject<PBXFileReference> file, PBXObject<PBXBuildFile> buildFile, PBXObject<PBXNativeTarget> target)
+        private void AddFileToTarget(PBXObject<PBXFileReference> file, PBXObject<PBXBuildFile> buildFile, PBXObject<PBXNativeTarget> target)
         {
             if (IsSourceFile(file.Value.name))
             {
                 foreach (var phaseKey in target.Value.buildPhases)
                 {
-                    var phase = Project.findObject(phaseKey);
-                    if (phase is PBXObject<PBXSourcesBuildPhase>)
+                    if (Project.FindObject(phaseKey) is PBXObject<PBXSourcesBuildPhase> phase)
                     {
                         var sources = phase as PBXObject<PBXSourcesBuildPhase>;
                         sources.Value.files.Add(buildFile.Key);
@@ -106,8 +116,7 @@ namespace PBXEdit
             {
                 foreach (var phaseKey in target.Value.buildPhases)
                 {
-                    var phase = Project.findObject(phaseKey);
-                    if (phase is PBXObject<PBXHeadersBuildPhase>)
+                    if (Project.FindObject(phaseKey) is PBXObject<PBXHeadersBuildPhase> phase)
                     {
                         var sources = phase as PBXObject<PBXHeadersBuildPhase>;
                         sources.Value.files.Add(buildFile.Key);
@@ -117,9 +126,9 @@ namespace PBXEdit
             }
         }
 
-        void AddFileEntry(string filePath, List<PBXObject<PBXNativeTarget>> targets)
+        private void AddFileEntry(string filePath, List<PBXObject<PBXNativeTarget>> targets)
         {
-            var sourceRoot = Project.getSourceRoot();
+            var sourceRoot = Project.GetSourceRoot();
 
             if (!filePath.StartsWith(sourceRoot))
             {
@@ -130,7 +139,7 @@ namespace PBXEdit
             var sourcePath = filePath.Substring(sourceRoot.Length);
             sourcePath = ToPBXPath(sourcePath);
 
-            var fileRefObj = Project.addFileReference();
+            var fileRefObj = Project.AddFileReference();
             var fileRef = fileRefObj.Value;
             fileRef.path = sourcePath;
             fileRef.sourceTree = "SOURCE_ROOT";
@@ -140,7 +149,7 @@ namespace PBXEdit
 
             TargetGroup.Value.children.Add(fileRefObj.Key);
 
-            var buildFile = Project.addBuildFile(fileRefObj);
+            var buildFile = Project.AddBuildFile(fileRefObj);
 
             foreach (var target in targets)
             {

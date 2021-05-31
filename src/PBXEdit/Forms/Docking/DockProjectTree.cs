@@ -7,7 +7,7 @@ namespace PBXEdit
 {
     public partial class DockProjectTree : DockProject
     {
-        class FileNode
+        private class FileNode
         {
             public string Name;
             public string FilePath;
@@ -15,7 +15,7 @@ namespace PBXEdit
             public PBXObject<PBXGroup> Group;
         }
 
-        class GroupNode
+        private class GroupNode
         {
             public string Name;
             public string FilePath;
@@ -32,49 +32,62 @@ namespace PBXEdit
             Populate();
         }
 
-        void Populate()
+        private void Populate()
         {
             treeView.Nodes.Clear();
 
             if (Project == null)
-                return;
-
-            var root = Project.getRoot();
-            if (root is PBXObject<PBXProject>)
             {
-                PopulateProject(root as PBXObject<PBX.PBXProject>);
+                return;
+            }
+
+            if (Project.GetRoot() is PBXObject<PBXProject> proj)
+            {
+                PopulateProject(proj);
             }
         }
 
-        void PopulateProject(PBXObject<PBXProject> root)
+        private void PopulateProject(PBXObject<PBXProject> root)
         {
             var mainGroup = root.Value.mainGroup;
 
-            var group = Project.findObject<PBXGroup>(mainGroup);
+            var group = Project.FindObject<PBXGroup>(mainGroup);
             if (group == null)
+            {
                 return;
+            }
 
             PopulateGroup(null, group, "");
         }
 
-        string CombinePath(string a, string b)
+        private string CombinePath(string a, string b)
         {
             if (b == null)
+            {
                 return a;
+            }
+
             if (a.EndsWith("/"))
+            {
                 a += b;
+            }
             else
+            {
                 a += "/" + b;
+            }
+
             return a;
         }
 
-        DarkTreeNode PopulateGroup(DarkTreeNode parentNode, PBXObject<PBXGroup> group, string path, DarkTreeNode target = null)
+        private DarkTreeNode PopulateGroup(DarkTreeNode parentNode, PBXObject<PBXGroup> group, string path, DarkTreeNode target = null)
         {
-            var name = group.Value.name != null ? group.Value.name : group.Value.path;
+            var name = group.Value.name ?? group.Value.path;
             if (name == null && parentNode == null)
+            {
                 name = "Project";
+            }
 
-            var groupNode = target != null ? target : new DarkTreeNode(name);
+            var groupNode = target ?? new DarkTreeNode(name);
             groupNode.ExpandedIcon = Icons.folder_16x;
             groupNode.Icon = Icons.folder_Closed_16xLG;
 
@@ -88,34 +101,39 @@ namespace PBXEdit
                 groupPath = CombinePath(groupPath, group.Value.path);
             }
 
-            var groupInfo = new GroupNode();
-            groupInfo.Name = name;
-            groupInfo.Group = group;
-            groupInfo.FilePath = path;
+            var groupInfo = new GroupNode
+            {
+                Name = name,
+                Group = group,
+                FilePath = path
+            };
 
             groupNode.Tag = groupInfo;
 
             if (group.Value.children == null)
+            {
                 group.Value.children = new List<dynamic>();
+            }
 
             foreach (var child in group.Value.children)
             {
                 var childId = child as string;
 
-                var fileRef = Project.findObject(childId);
+                var fileRef = Project.FindObject(childId);
                 if (fileRef is PBXObject<PBXGroup>)
                 {
                     PopulateGroup(groupNode, fileRef, groupPath);
                 }
-                else if (fileRef is PBXObject<PBXFileReference>)
+                else if (fileRef is PBXObject<PBXFileReference> fileObj)
                 {
-                    var fileObj = fileRef as PBXObject<PBXFileReference>;
-                    var fileName = fileObj.Value.name != null ? fileObj.Value.name : fileObj.Value.path;
+                    var fileName = fileObj.Value.name ?? fileObj.Value.path;
 
-                    var info = new FileNode();
-                    info.Name = fileName;
-                    info.Group = group;
-                    info.File = fileObj;
+                    var info = new FileNode
+                    {
+                        Name = fileName,
+                        Group = group,
+                        File = fileObj
+                    };
                     if (fileObj.Value.sourceTree == "SOURCE_ROOT")
                     {
                         info.FilePath = fileObj.Value.path;
@@ -125,9 +143,11 @@ namespace PBXEdit
                         info.FilePath = CombinePath(groupPath, fileName);
                     }
 
-                    var fileNode = new DarkTreeNode(fileName);
-                    fileNode.Icon = Icons.Files_7954;
-                    fileNode.Tag = info;
+                    var fileNode = new DarkTreeNode(fileName)
+                    {
+                        Icon = Icons.Files_7954,
+                        Tag = info
+                    };
 
                     groupNode.Nodes.Add(fileNode);
                 }
@@ -136,10 +156,14 @@ namespace PBXEdit
             if (parentNode != null)
             {
                 if (target == null)
+                {
                     parentNode.Nodes.Add(groupNode);
+                }
             }
             else
+            {
                 treeView.Nodes.Add(groupNode);
+            }
 
             return groupNode;
         }
@@ -159,12 +183,18 @@ namespace PBXEdit
 
             var selected = GetSelectedObject();
             if (selected == null)
+            {
                 return;
+            }
 
             if (selected.Tag is GroupNode)
+            {
                 treeView.ContextMenuStrip = treeContextMenuDir;
+            }
             else if (selected.Tag is FileNode)
+            {
                 treeView.ContextMenuStrip = treeContextMenuFile;
+            }
         }
 
         public void AddFiles(PBXObject<PBXGroup> group, List<string> files)
@@ -173,7 +203,7 @@ namespace PBXEdit
             dlgAdd.ShowDialog();
         }
 
-        List<string> BrowseForFiles()
+        private List<string> BrowseForFiles()
         {
             var files = new List<string>();
 
@@ -183,7 +213,9 @@ namespace PBXEdit
 
             var res = openFileDialog1.ShowDialog();
             if (res != System.Windows.Forms.DialogResult.OK)
+            {
                 return files;
+            }
 
             foreach (var file in openFileDialog1.FileNames)
             {
@@ -193,7 +225,7 @@ namespace PBXEdit
             return files;
         }
 
-        void InvalidateNodeTree(DarkTreeNode selectedNode)
+        private void InvalidateNodeTree(DarkTreeNode selectedNode)
         {
             var groupInfo = selectedNode.Tag as GroupNode;
 
@@ -210,7 +242,9 @@ namespace PBXEdit
         {
             var selectedNode = GetSelectedObject();
             if (selectedNode == null)
+            {
                 return;
+            }
 
             var selected = selectedNode.Tag;
             if (selected is GroupNode)
@@ -219,7 +253,9 @@ namespace PBXEdit
 
                 var files = BrowseForFiles();
                 if (files.Count == 0)
+                {
                     return;
+                }
 
                 AddFiles(groupInfo.Group, files);
 
@@ -231,14 +267,13 @@ namespace PBXEdit
         {
             var selectedNode = GetSelectedObject();
             if (selectedNode == null)
+            {
                 return;
+            }
 
             var selected = selectedNode.Tag;
-            if (selected is FileNode)
+            if (selected is FileNode fileInfo)
             {
-                var fileInfo = selected as FileNode;
-                var file = fileInfo.File;
-
                 var main = Program.GetMain();
                 main.OpenDocument(fileInfo.FilePath);
             }
@@ -249,16 +284,16 @@ namespace PBXEdit
             OnClickOpenFile(sender, e);
         }
 
-        void RemoveFile(DarkTreeNode node)
+        private void RemoveFile(DarkTreeNode node)
         {
             var fileNode = node.Tag as FileNode;
 
-            Project.removeObjectAndDependencies(fileNode.File);
+            Project.RemoveObjectAndDependencies(fileNode.File);
 
             node.Remove();
         }
 
-        void RemoveRecursive(DarkTreeNode node)
+        private void RemoveRecursive(DarkTreeNode node)
         {
             var groupNode = node.Tag as GroupNode;
 
@@ -275,7 +310,7 @@ namespace PBXEdit
                 }
             }
 
-            Project.removeObjectAndDependencies(groupNode.Group);
+            Project.RemoveObjectAndDependencies(groupNode.Group);
 
             node.Remove();
         }
@@ -284,7 +319,9 @@ namespace PBXEdit
         {
             var selectedNode = GetSelectedObject();
             if (selectedNode == null)
+            {
                 return;
+            }
 
             if (selectedNode.Tag is GroupNode)
             {
@@ -305,10 +342,14 @@ namespace PBXEdit
         {
             var selectedNode = GetSelectedObject();
             if (selectedNode == null)
+            {
                 return;
+            }
 
             if (!(selectedNode.Tag is GroupNode))
+            {
                 return;
+            }
 
             var groupNode = selectedNode.Tag as GroupNode;
             var group = groupNode.Group;
@@ -317,17 +358,21 @@ namespace PBXEdit
             groupNameDlg.Text = "Enter a name";
             var res = groupNameDlg.ShowDialog();
             if (res == System.Windows.Forms.DialogResult.Cancel)
+            {
                 return;
+            }
 
             var groupName = groupNameDlg.InputText;
             if (groupName.Length == 0)
+            {
                 return;
+            }
 
             // Keep folders always at the top.
             int idx = 0;
             foreach (var childKey in group.Value.children)
             {
-                var child = Project.findObject(childKey);
+                var child = Project.FindObject(childKey);
                 if (child is PBXObject<PBXFileReference>)
                 {
                     break;
@@ -335,7 +380,7 @@ namespace PBXEdit
                 idx++;
             }
 
-            var newGroup = Project.addGroup();
+            var newGroup = Project.AddGroup();
             newGroup.Value.name = groupName;
             newGroup.Value.sourceTree = "<group>";
 

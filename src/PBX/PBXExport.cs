@@ -10,7 +10,7 @@ namespace PBX
 
     public partial class File
     {
-        public void save(string file)
+        public void Save(string file)
         {
             try
             {
@@ -19,7 +19,7 @@ namespace PBX
                 using (var stream = new StreamWriter(file, false, encoding))
                 {
                     var sw = new Writer(stream);
-                    save(sw);
+                    Save(sw);
                 }
             }
             catch (Exception)
@@ -28,54 +28,54 @@ namespace PBX
             }
         }
 
-        void save(Writer sw)
+        private void Save(Writer sw)
         {
             // Save encoding in header
             sw.WriteLine("// !$*UTF8*$!");
 
             sw.BeginScope();
 
-            saveField(sw, "archiveVersion", archiveVersion);
-            saveField(sw, "classes", classes);
-            saveField(sw, "objectVersion", objectVersion);
+            SaveField(sw, "archiveVersion", archiveVersion);
+            SaveField(sw, "classes", classes);
+            SaveField(sw, "objectVersion", objectVersion);
 
-            saveObjects(sw);
+            SaveObjects(sw);
 
-            saveField(sw, "rootObject", rootObject, getObjectComment(rootObject));
+            SaveField(sw, "rootObject", rootObject, GetObjectComment(rootObject));
 
             sw.EndScope();
             sw.WriteLine("");
         }
 
-        void saveObjects(Writer sw)
+        private void SaveObjects(Writer sw)
         {
             sw.WriteIndent();
             sw.Write("objects = ");
 
             sw.BeginDict();
 
-            saveObjectSection(sw, AggregateTargets);
-            saveObjectSection(sw, BuildFiles);
-            saveObjectSection(sw, ContainerItemProxies);
-            saveObjectSection(sw, CopyFilesBuildPhases);
-            saveObjectSection(sw, FileReferences);
-            saveObjectSection(sw, FrameworksBuildPhases);
-            saveObjectSection(sw, Groups);
-            saveObjectSection(sw, HeadersBuildPhases);
-            saveObjectSection(sw, NativeTargets);
-            saveObjectSection(sw, Projects);
-            saveObjectSection(sw, ResourcesBuildPhases);
-            saveObjectSection(sw, ShellScriptBuildPhases);
-            saveObjectSection(sw, SourcesBuildPhases);
-            saveObjectSection(sw, TargetDependencies);
-            saveObjectSection(sw, BuildConfigurations);
-            saveObjectSection(sw, ConfigurationLists);
+            SaveObjectSection(sw, AggregateTargets);
+            SaveObjectSection(sw, BuildFiles);
+            SaveObjectSection(sw, ContainerItemProxies);
+            SaveObjectSection(sw, CopyFilesBuildPhases);
+            SaveObjectSection(sw, FileReferences);
+            SaveObjectSection(sw, FrameworksBuildPhases);
+            SaveObjectSection(sw, Groups);
+            SaveObjectSection(sw, HeadersBuildPhases);
+            SaveObjectSection(sw, NativeTargets);
+            SaveObjectSection(sw, Projects);
+            SaveObjectSection(sw, ResourcesBuildPhases);
+            SaveObjectSection(sw, ShellScriptBuildPhases);
+            SaveObjectSection(sw, SourcesBuildPhases);
+            SaveObjectSection(sw, TargetDependencies);
+            SaveObjectSection(sw, BuildConfigurations);
+            SaveObjectSection(sw, ConfigurationLists);
 
             sw.EndDict();
             sw.WriteLine(";");
         }
 
-        void saveStringValue(Writer sw, string val, string comment, bool inArray = false)
+        private void SaveStringValue(Writer sw, string val, string comment, bool inArray = false)
         {
             val = val.Replace("\"", "\\\"");
             if (inArray)
@@ -123,28 +123,32 @@ namespace PBX
             }
         }
 
-        void saveDictionary(Writer sw, DictionaryList dict)
+        private void SaveDictionary(Writer sw, DictionaryList dict)
         {
             sw.BeginDict();
 
             foreach (var pair in dict)
             {
-                saveField(sw, pair.Key, pair.Value);
+                SaveField(sw, pair.Key, pair.Value);
             }
 
             sw.EndDict();
         }
 
-        void saveAssignment(Writer sw, string key, string keyComment = "")
+        private void SaveAssignment(Writer sw, string key, string keyComment = "")
         {
             sw.WriteIndent();
             if (keyComment != null && keyComment.Length > 0)
+            {
                 sw.Write("{0} /* {1} */ = ", key, keyComment);
+            }
             else
+            {
                 sw.Write("{0} = ", key);
+            }
         }
 
-        void saveArray(Writer sw, List<dynamic> arr)
+        private void SaveArray(Writer sw, List<dynamic> arr)
         {
             sw.BeginArray();
 
@@ -152,8 +156,8 @@ namespace PBX
             {
                 sw.WriteIndent();
 
-                var comment = getObjectComment(entry);
-                saveFieldValue(sw, entry, comment, true);
+                var comment = GetObjectComment(entry);
+                SaveFieldValue(sw, entry, comment, true);
 
                 sw.Write(",");
                 sw.NewLine();
@@ -162,36 +166,39 @@ namespace PBX
             sw.EndArray();
         }
 
-        void saveFieldValue(Writer sw, dynamic val, string valueComment = "", bool inArray = false)
+        private void SaveFieldValue(Writer sw, dynamic val, string valueComment = "", bool inArray = false)
         {
             if (val is string)
             {
                 var str = val as string;
-                saveStringValue(sw, str, valueComment, inArray);
+                SaveStringValue(sw, str, valueComment, inArray);
             }
             else if (val is List<dynamic>)
             {
                 var list = val as List<dynamic>;
-                saveArray(sw, list);
+                SaveArray(sw, list);
             }
             else if (val is DictionaryList)
             {
                 var list = val as DictionaryList;
-                saveDictionary(sw, list);
+                SaveDictionary(sw, list);
             }
         }
 
-        void saveField(Writer sw, string key, dynamic val, string valueComment = "")
+        private void SaveField(Writer sw, string key, dynamic val, string valueComment = "")
         {
             if (val == null)
+            {
                 return;
-            saveAssignment(sw, key);
-            saveFieldValue(sw, val, valueComment);
+            }
+
+            SaveAssignment(sw, key);
+            SaveFieldValue(sw, val, valueComment);
             sw.Write(";");
             sw.NewLine();
         }
 
-        bool shouldCommentField(string name)
+        private bool ShouldCommentField(string name)
         {
             switch (name)
             {
@@ -201,21 +208,21 @@ namespace PBX
             return true;
         }
 
-        void saveFields<T>(Writer sw, T src)
+        private void SaveFields<T>(Writer sw, T src)
         {
             PropertyInfo[] members = src.GetType().GetProperties();
-            saveField(sw, "isa", src.GetType().Name);
+            SaveField(sw, "isa", src.GetType().Name);
             foreach (var field in members)
             {
                 var prop = src.GetType().GetProperty(field.Name);
                 var data = prop.GetValue(src, null);
 
-                string valueComment = shouldCommentField(field.Name) ? getObjectComment(data) : null;
-                saveField(sw, prop.Name, data, valueComment);
+                string valueComment = ShouldCommentField(field.Name) ? GetObjectComment(data) : null;
+                SaveField(sw, prop.Name, data, valueComment);
             }
         }
 
-        bool writeInline<T>(T src)
+        private bool WriteInline<T>(T src)
         {
             switch (src.GetType().Name)
             {
@@ -226,13 +233,13 @@ namespace PBX
             return false;
         }
 
-        string getProjectName(PBXProject proj)
+        private string GetProjectName(PBXProject proj)
         {
             // This is potentially wrong, this is based on guess-work.
             if (proj.targets.Count > 0)
             {
                 var target = proj.targets[0];
-                var targetObj = findObject(target);
+                var targetObj = FindObject(target);
                 if (targetObj != null && targetObj is PBXObject<PBXNativeTarget>)
                 {
                     var nativeTarget = targetObj as PBXObject<PBXNativeTarget>;
@@ -242,10 +249,12 @@ namespace PBX
             return "";
         }
 
-        string getObjectComment(dynamic entry)
+        private string GetObjectComment(dynamic entry)
         {
             if (entry == null)
+            {
                 return null;
+            }
 
             string keyComment = null;
             if (entry is PBXObject<PBXAggregateTarget>)
@@ -257,24 +266,36 @@ namespace PBX
             {
                 var cur = entry as PBXObject<PBXFileReference>;
                 if (cur.Value.name != null)
+                {
                     keyComment = cur.Value.name;
+                }
                 else
+                {
                     keyComment = cur.Value.path;
+                }
             }
             else if (entry is PBXObject<PBXBuildFile>)
             {
                 var cur = entry as PBXObject<PBXBuildFile>;
                 var fileId = cur.Value.fileRef;
-                var fileObj = findObject(fileId);
+                var fileObj = FindObject(fileId);
                 var fileRef = fileObj as PBXObject<PBXFileReference>;
                 if (fileRef.Value.name != null)
+                {
                     keyComment = fileRef.Value.name;
+                }
                 else
+                {
                     keyComment = fileRef.Value.path;
+                }
+
                 var fileType = fileRef.Value.explicitFileType;
                 if (fileType == null)
+                {
                     fileType = fileRef.Value.lastKnownFileType;
-                keyComment += " in " + getFileCategory(cur.Key, fileType);
+                }
+
+                keyComment += " in " + GetFileCategory(cur.Key, fileType);
             }
             else if (entry is PBXObject<PBXContainerItemProxy>)
             {
@@ -315,9 +336,13 @@ namespace PBX
             {
                 var fileRef = entry as PBXObject<PBXFileReference>;
                 if (fileRef.Value.name != null)
+                {
                     keyComment = fileRef.Value.name;
+                }
                 else
+                {
                     keyComment = fileRef.Value.path;
+                }
             }
             else if (entry is PBXObject<PBXShellScriptBuildPhase>)
             {
@@ -334,13 +359,13 @@ namespace PBX
             }
             else if (entry is PBXObject<XCConfigurationList>)
             {
-                var buildRef = findBuildConfigurationRef(entry.Key);
+                var buildRef = FindBuildConfigurationRef(entry.Key);
                 if (buildRef != null)
                 {
                     if (buildRef is PBXObject<PBXProject>)
                     {
                         var obj = buildRef as PBXObject<PBXProject>;
-                        var name = getProjectName(obj.Value);
+                        var name = GetProjectName(obj.Value);
                         keyComment = string.Format("Build configuration list for PBXProject \"{0}\"", name);
                     }
                     else if (buildRef is PBXObject<PBXNativeTarget>)
@@ -362,20 +387,22 @@ namespace PBX
             }
             else if (entry is string)
             {
-                return getObjectComment(findObject(entry as string));
+                return GetObjectComment(FindObject(entry as string));
             }
 
             return keyComment;
         }
 
-        string getFileCategory(string fileId, string fileType)
+        private string GetFileCategory(string fileId, string fileType)
         {
             foreach (var entry in this.ResourcesBuildPhases)
             {
                 foreach (var elem in entry.Value.files)
                 {
                     if (elem == fileId)
+                    {
                         return "Resources";
+                    }
                 }
             }
 
@@ -384,7 +411,9 @@ namespace PBX
                 foreach (var elem in entry.Value.files)
                 {
                     if (elem == fileId)
+                    {
                         return entry.Value.name == null ? "CopyFiles" : entry.Value.name;
+                    }
                 }
             }
 
@@ -393,7 +422,9 @@ namespace PBX
                 foreach (var elem in entry.Value.files)
                 {
                     if (elem == fileId)
+                    {
                         return "Frameworks";
+                    }
                 }
             }
 
@@ -402,7 +433,9 @@ namespace PBX
                 foreach (var elem in entry.Value.files)
                 {
                     if (elem == fileId)
+                    {
                         return "Headers";
+                    }
                 }
             }
 
@@ -411,14 +444,16 @@ namespace PBX
                 foreach (var elem in entry.Value.files)
                 {
                     if (elem == fileId)
+                    {
                         return "Sources";
+                    }
                 }
             }
 
             return "NOPE";
         }
 
-        void saveObjectSection<T>(Writer sw, List<PBXObject<T>> list)
+        private void SaveObjectSection<T>(Writer sw, List<PBXObject<T>> list)
         {
             var section = typeof(T).Name;
             sw.WriteLine("\n/* Begin {0} section */", section);
@@ -428,15 +463,15 @@ namespace PBX
                 var key = entry.Key;
                 var val = entry.Value;
 
-                string keyComment = getObjectComment(entry);
-                saveAssignment(sw, key, keyComment);
+                string keyComment = GetObjectComment(entry);
+                SaveAssignment(sw, key, keyComment);
 
-                bool inlineScope = writeInline(val);
+                bool inlineScope = WriteInline(val);
                 sw.SetInline(inlineScope);
 
                 sw.BeginDict();
 
-                saveFields(sw, val);
+                SaveFields(sw, val);
 
                 sw.EndDict();
 

@@ -8,37 +8,38 @@ namespace PBX
 
     public partial class File
     {
-        string archiveVersion = "1";
-        DictionaryList classes = new DictionaryList();
-        string objectVersion = "51";
+        private string archiveVersion = "1";
+        private DictionaryList classes = new DictionaryList();
+        private string objectVersion = "51";
+
         // Objects
-        List<PBXObject<PBXAggregateTarget>> AggregateTargets = new List<PBXObject<PBXAggregateTarget>>();
-        List<PBXObject<PBXBuildFile>> BuildFiles = new List<PBXObject<PBXBuildFile>>();
-        List<PBXObject<PBXContainerItemProxy>> ContainerItemProxies = new List<PBXObject<PBXContainerItemProxy>>();
-        List<PBXObject<PBXCopyFilesBuildPhase>> CopyFilesBuildPhases = new List<PBXObject<PBXCopyFilesBuildPhase>>();
-        List<PBXObject<PBXFileReference>> FileReferences = new List<PBXObject<PBXFileReference>>();
-        List<PBXObject<PBXFrameworksBuildPhase>> FrameworksBuildPhases = new List<PBXObject<PBXFrameworksBuildPhase>>();
-        List<PBXObject<PBXGroup>> Groups = new List<PBXObject<PBXGroup>>();
-        List<PBXObject<PBXHeadersBuildPhase>> HeadersBuildPhases = new List<PBXObject<PBXHeadersBuildPhase>>();
-        List<PBXObject<PBXNativeTarget>> NativeTargets = new List<PBXObject<PBXNativeTarget>>();
-        List<PBXObject<PBXProject>> Projects = new List<PBXObject<PBXProject>>();
-        List<PBXObject<PBXResourcesBuildPhase>> ResourcesBuildPhases = new List<PBXObject<PBXResourcesBuildPhase>>();
-        List<PBXObject<PBXShellScriptBuildPhase>> ShellScriptBuildPhases = new List<PBXObject<PBXShellScriptBuildPhase>>();
-        List<PBXObject<PBXSourcesBuildPhase>> SourcesBuildPhases = new List<PBXObject<PBXSourcesBuildPhase>>();
-        List<PBXObject<PBXTargetDependency>> TargetDependencies = new List<PBXObject<PBXTargetDependency>>();
-        List<PBXObject<XCBuildConfiguration>> BuildConfigurations = new List<PBXObject<XCBuildConfiguration>>();
-        List<PBXObject<XCConfigurationList>> ConfigurationLists = new List<PBXObject<XCConfigurationList>>();
-        string rootObject;
-        string sourceRoot;
+        private List<PBXObject<PBXAggregateTarget>> AggregateTargets = new List<PBXObject<PBXAggregateTarget>>();
+        private List<PBXObject<PBXBuildFile>> BuildFiles = new List<PBXObject<PBXBuildFile>>();
+        private List<PBXObject<PBXContainerItemProxy>> ContainerItemProxies = new List<PBXObject<PBXContainerItemProxy>>();
+        private List<PBXObject<PBXCopyFilesBuildPhase>> CopyFilesBuildPhases = new List<PBXObject<PBXCopyFilesBuildPhase>>();
+        private List<PBXObject<PBXFileReference>> FileReferences = new List<PBXObject<PBXFileReference>>();
+        private List<PBXObject<PBXFrameworksBuildPhase>> FrameworksBuildPhases = new List<PBXObject<PBXFrameworksBuildPhase>>();
+        private List<PBXObject<PBXGroup>> Groups = new List<PBXObject<PBXGroup>>();
+        private List<PBXObject<PBXHeadersBuildPhase>> HeadersBuildPhases = new List<PBXObject<PBXHeadersBuildPhase>>();
+        private List<PBXObject<PBXNativeTarget>> NativeTargets = new List<PBXObject<PBXNativeTarget>>();
+        private List<PBXObject<PBXProject>> Projects = new List<PBXObject<PBXProject>>();
+        private List<PBXObject<PBXResourcesBuildPhase>> ResourcesBuildPhases = new List<PBXObject<PBXResourcesBuildPhase>>();
+        private List<PBXObject<PBXShellScriptBuildPhase>> ShellScriptBuildPhases = new List<PBXObject<PBXShellScriptBuildPhase>>();
+        private List<PBXObject<PBXSourcesBuildPhase>> SourcesBuildPhases = new List<PBXObject<PBXSourcesBuildPhase>>();
+        private List<PBXObject<PBXTargetDependency>> TargetDependencies = new List<PBXObject<PBXTargetDependency>>();
+        private List<PBXObject<XCBuildConfiguration>> BuildConfigurations = new List<PBXObject<XCBuildConfiguration>>();
+        private List<PBXObject<XCConfigurationList>> ConfigurationLists = new List<PBXObject<XCConfigurationList>>();
+        private string rootObject;
+        private string sourceRoot;
 
         // Internal
-        Dictionary<string, dynamic> ObjectMap = new Dictionary<string, dynamic>();
+        private Dictionary<string, dynamic> ObjectMap = new Dictionary<string, dynamic>();
 
         public File(string file)
         {
             try
             {
-                load(file);
+                Load(file);
 
                 var projectFilePath = Path.GetDirectoryName(Path.GetFullPath(file));
                 sourceRoot = Path.GetFullPath(Path.Combine(projectFilePath, ".."));
@@ -49,7 +50,7 @@ namespace PBX
             }
         }
 
-        static string ByteToHexBitFiddle(byte[] bytes)
+        private static string ByteToHexBitFiddle(byte[] bytes)
         {
             char[] c = new char[bytes.Length * 2];
             int b;
@@ -63,7 +64,7 @@ namespace PBX
             return new string(c);
         }
 
-        public static string generateUUID()
+        public static string GenerateUUID()
         {
             var prng = new RNGCryptoServiceProvider();
 
@@ -71,18 +72,18 @@ namespace PBX
             prng.GetBytes(data);
 
             // RFC 4122, section 4.4 requirement.
-            data[6] = (byte)(0x40 | ((int)data[6] & 0xf));
-            data[8] = (byte)(0x80 | ((int)data[8] & 0x3f));
+            data[6] = (byte)(0x40 | (data[6] & 0xf));
+            data[8] = (byte)(0x80 | (data[8] & 0x3f));
 
             return ByteToHexBitFiddle(data).Substring(0, 24);
         }
 
-        public string getSourceRoot()
+        public string GetSourceRoot()
         {
             return sourceRoot;
         }
 
-        public List<PBXObject<T>> getObjectList<T>()
+        public List<PBXObject<T>> GetObjectList<T>()
         {
             switch (typeof(T).Name)
             {
@@ -122,27 +123,23 @@ namespace PBX
             return null;
         }
 
-        public void removeObjectAndDependencies(dynamic obj)
+        public void RemoveObjectAndDependencies(dynamic obj)
         {
-            if (obj is PBXObject<PBXFileReference>)
+            if (obj is PBXObject<PBXFileReference> fileRef)
             {
-                var fileRef = obj as PBXObject<PBXFileReference>;
-
                 foreach (var buildFile in BuildFiles)
                 {
                     if (buildFile.Value.fileRef == fileRef.Key)
                     {
-                        removeObjectAndDependencies(buildFile);
+                        RemoveObjectAndDependencies(buildFile);
                         break;
                     }
                 }
 
                 FileReferences.Remove(fileRef);
             }
-            else if (obj is PBXObject<PBXBuildFile>)
+            else if (obj is PBXObject<PBXBuildFile> buildFile)
             {
-                var buildFile = obj as PBXObject<PBXBuildFile>;
-
                 // Go over all things that contain references to PBXBuildFile
                 foreach (var sourcePhase in SourcesBuildPhases)
                 {
@@ -155,10 +152,8 @@ namespace PBX
 
                 BuildFiles.Remove(buildFile);
             }
-            else if (obj is PBXObject<PBXGroup>)
+            else if (obj is PBXObject<PBXGroup> group)
             {
-                var group = obj as PBXObject<PBXGroup>;
-
                 // NOTE: Unsure if groups can have other references other than other groups.
                 foreach (var group2 in Groups)
                 {
@@ -169,11 +164,13 @@ namespace PBX
             }
         }
 
-        public PBXObject<PBXFileReference> addFileReference()
+        public PBXObject<PBXFileReference> AddFileReference()
         {
-            var fileObj = new PBXObject<PBXFileReference>();
-            fileObj.Key = generateUUID();
-            fileObj.Value = new PBXFileReference();
+            var fileObj = new PBXObject<PBXFileReference>
+            {
+                Key = GenerateUUID(),
+                Value = new PBXFileReference()
+            };
 
             FileReferences.Add(fileObj);
             ObjectMap.Add(fileObj.Key, fileObj);
@@ -181,11 +178,13 @@ namespace PBX
             return fileObj;
         }
 
-        public PBXObject<PBXGroup> addGroup()
+        public PBXObject<PBXGroup> AddGroup()
         {
-            var groupObj = new PBXObject<PBXGroup>();
-            groupObj.Key = generateUUID();
-            groupObj.Value = new PBXGroup();
+            var groupObj = new PBXObject<PBXGroup>
+            {
+                Key = GenerateUUID(),
+                Value = new PBXGroup()
+            };
 
             Groups.Add(groupObj);
             ObjectMap.Add(groupObj.Key, groupObj);
@@ -193,11 +192,13 @@ namespace PBX
             return groupObj;
         }
 
-        public PBXObject<PBXBuildFile> addBuildFile(PBXObject<PBXFileReference> file)
+        public PBXObject<PBXBuildFile> AddBuildFile(PBXObject<PBXFileReference> file)
         {
-            var res = new PBXObject<PBXBuildFile>();
-            res.Key = generateUUID();
-            res.Value = new PBXBuildFile();
+            var res = new PBXObject<PBXBuildFile>
+            {
+                Key = GenerateUUID(),
+                Value = new PBXBuildFile()
+            };
 
             res.Value.fileRef = file.Key;
             BuildFiles.Add(res);
@@ -206,9 +207,9 @@ namespace PBX
             return res;
         }
 
-        public PBXFileReference findFile(string id)
+        public PBXFileReference FindFile(string id)
         {
-            dynamic obj = null;
+            dynamic obj;
             if (ObjectMap.TryGetValue(id, out obj))
             {
                 if (obj is PBXObject<PBXFileReference>)
@@ -219,55 +220,72 @@ namespace PBX
             return null;
         }
 
-        public List<PBXObject<PBXGroup>> getGroups()
+        public List<PBXObject<PBXGroup>> GetGroups()
         {
             return Groups;
         }
 
-        public dynamic getRoot()
+        public dynamic GetRoot()
         {
-            return findObject(rootObject);
+            return FindObject(rootObject);
         }
 
-        public PBXObject<T> findObject<T>(dynamic objectId)
+        public PBXObject<T> FindObject<T>(dynamic objectId)
         {
             if (!(objectId is string))
+            {
                 return null;
-            dynamic obj = null;
+            }
+
+            dynamic obj;
             if (ObjectMap.TryGetValue(objectId as string, out obj))
             {
                 if (obj is PBXObject<T>)
+                {
                     return obj as PBXObject<T>;
+                }
             }
             return null;
         }
 
-        public dynamic findObject(dynamic objectId)
+        public dynamic FindObject(dynamic objectId)
         {
             if (!(objectId is string))
+            {
                 return null;
-            dynamic obj = null;
+            }
+
+            dynamic obj;
             if (ObjectMap.TryGetValue(objectId as string, out obj))
+            {
                 return obj;
+            }
+
             return null;
         }
 
-        dynamic findBuildConfigurationRef(string id)
+        private dynamic FindBuildConfigurationRef(string id)
         {
             foreach (var obj in AggregateTargets)
             {
                 if (obj.Value.buildConfigurationList == id)
+                {
                     return obj;
+                }
             }
             foreach (var obj in NativeTargets)
             {
                 if (obj.Value.buildConfigurationList == id)
+                {
                     return obj;
+                }
             }
             foreach (var obj in Projects)
             {
                 if (obj.Value.buildConfigurationList == id)
+                {
                     return obj;
+                }
             }
             return null;
         }

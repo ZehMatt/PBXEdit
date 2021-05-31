@@ -1,0 +1,20 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <MSBuildAllProjects Condition="'$(MSBuildVersion)' == '' Or '$(MSBuildVersion)' &lt; '16.0'">$(MSBuildAllProjects);$(MSBuildThisFileFullPath)</MSBuildAllProjects>
+    <HasSharedItems>true</HasSharedItems>
+    <SharedGUID>7874f05c-1b9d-4818-bf62-4a72dbb5b5f6</SharedGUID>
+  </PropertyGroup>
+  <PropertyGroup Label="Configuration">
+    <Import_RootNamespace>PBX</Import_RootNamespace>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="$(MSBuildThisFileDirectory)PBX.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)PBXFile.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)PBXImport.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)PBXParser.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)PBXReader.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)PBXExport.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)PBXWriter.cs" />
+  </ItemGroup>
+</Project>

@@ -29,10 +29,7 @@ namespace PBXEdit
         /// </summary>
         private void InitializeComponent()
         {
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(FormMain));
             this.dockPanel = new DarkUI.Docking.DarkDockPanel();
-            this.toolbarTop = new DarkUI.Controls.DarkToolStrip();
-            this.toolStripButton1 = new System.Windows.Forms.ToolStripButton();
             this.darkMenuStrip1 = new DarkUI.Controls.DarkMenuStrip();
             this.fileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.openProjectToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -43,7 +40,6 @@ namespace PBXEdit
             this.mnuBtExit = new System.Windows.Forms.ToolStripMenuItem();
             this.openFileDlg = new System.Windows.Forms.OpenFileDialog();
             this.saveFileDlg = new System.Windows.Forms.SaveFileDialog();
-            this.toolbarTop.SuspendLayout();
             this.darkMenuStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -51,37 +47,12 @@ namespace PBXEdit
             // 
             this.dockPanel.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(60)))), ((int)(((byte)(63)))), ((int)(((byte)(65)))));
             this.dockPanel.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.dockPanel.Location = new System.Drawing.Point(0, 52);
+            this.dockPanel.Location = new System.Drawing.Point(0, 24);
             this.dockPanel.Name = "dockPanel";
-            this.dockPanel.Size = new System.Drawing.Size(1008, 629);
+            this.dockPanel.Size = new System.Drawing.Size(1008, 657);
             this.dockPanel.TabIndex = 0;
             this.dockPanel.ContentAdded += new System.EventHandler<DarkUI.Docking.DockContentEventArgs>(this.OnContentAdded);
             this.dockPanel.ContentRemoved += new System.EventHandler<DarkUI.Docking.DockContentEventArgs>(this.OnContentRemoved);
-            // 
-            // toolbarTop
-            // 
-            this.toolbarTop.AutoSize = false;
-            this.toolbarTop.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(60)))), ((int)(((byte)(63)))), ((int)(((byte)(65)))));
-            this.toolbarTop.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(220)))), ((int)(((byte)(220)))), ((int)(((byte)(220)))));
-            this.toolbarTop.GripStyle = System.Windows.Forms.ToolStripGripStyle.Hidden;
-            this.toolbarTop.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.toolStripButton1});
-            this.toolbarTop.Location = new System.Drawing.Point(0, 24);
-            this.toolbarTop.Name = "toolbarTop";
-            this.toolbarTop.Padding = new System.Windows.Forms.Padding(5, 0, 1, 0);
-            this.toolbarTop.Size = new System.Drawing.Size(1008, 28);
-            this.toolbarTop.TabIndex = 1;
-            // 
-            // toolStripButton1
-            // 
-            this.toolStripButton1.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(60)))), ((int)(((byte)(63)))), ((int)(((byte)(65)))));
-            this.toolStripButton1.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.toolStripButton1.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(220)))), ((int)(((byte)(220)))), ((int)(((byte)(220)))));
-            this.toolStripButton1.Image = ((System.Drawing.Image)(resources.GetObject("toolStripButton1.Image")));
-            this.toolStripButton1.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.toolStripButton1.Name = "toolStripButton1";
-            this.toolStripButton1.Size = new System.Drawing.Size(23, 25);
-            this.toolStripButton1.Text = "toolStripButton1";
             // 
             // darkMenuStrip1
             // 
@@ -116,7 +87,7 @@ namespace PBXEdit
             this.openProjectToolStripMenuItem.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(60)))), ((int)(((byte)(63)))), ((int)(((byte)(65)))));
             this.openProjectToolStripMenuItem.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(220)))), ((int)(((byte)(220)))), ((int)(((byte)(220)))));
             this.openProjectToolStripMenuItem.Name = "openProjectToolStripMenuItem";
-            this.openProjectToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.openProjectToolStripMenuItem.Size = new System.Drawing.Size(161, 22);
             this.openProjectToolStripMenuItem.Text = "Open Project";
             this.openProjectToolStripMenuItem.Click += new System.EventHandler(this.OnMenuOpenProjectClick);
             // 
@@ -126,7 +97,7 @@ namespace PBXEdit
             this.closeProjectToolStripMenuItem.Enabled = false;
             this.closeProjectToolStripMenuItem.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(153)))), ((int)(((byte)(153)))));
             this.closeProjectToolStripMenuItem.Name = "closeProjectToolStripMenuItem";
-            this.closeProjectToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.closeProjectToolStripMenuItem.Size = new System.Drawing.Size(161, 22);
             this.closeProjectToolStripMenuItem.Text = "Close Project";
             this.closeProjectToolStripMenuItem.Click += new System.EventHandler(this.OnMenuCloseProjectClick);
             // 
@@ -136,7 +107,7 @@ namespace PBXEdit
             this.mnuBtSaveProject.Enabled = false;
             this.mnuBtSaveProject.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(153)))), ((int)(((byte)(153)))));
             this.mnuBtSaveProject.Name = "mnuBtSaveProject";
-            this.mnuBtSaveProject.Size = new System.Drawing.Size(180, 22);
+            this.mnuBtSaveProject.Size = new System.Drawing.Size(161, 22);
             this.mnuBtSaveProject.Text = "Save Project";
             this.mnuBtSaveProject.Click += new System.EventHandler(this.OnMenuSaveProjectClick);
             // 
@@ -146,7 +117,7 @@ namespace PBXEdit
             this.menuBtSaveProjectAs.Enabled = false;
             this.menuBtSaveProjectAs.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(153)))), ((int)(((byte)(153)))), ((int)(((byte)(153)))));
             this.menuBtSaveProjectAs.Name = "menuBtSaveProjectAs";
-            this.menuBtSaveProjectAs.Size = new System.Drawing.Size(180, 22);
+            this.menuBtSaveProjectAs.Size = new System.Drawing.Size(161, 22);
             this.menuBtSaveProjectAs.Text = "Save Project as...";
             this.menuBtSaveProjectAs.Click += new System.EventHandler(this.OnClickSaveAs);
             // 
@@ -156,14 +127,14 @@ namespace PBXEdit
             this.toolStripSeparator1.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(220)))), ((int)(((byte)(220)))), ((int)(((byte)(220)))));
             this.toolStripSeparator1.Margin = new System.Windows.Forms.Padding(0, 0, 0, 1);
             this.toolStripSeparator1.Name = "toolStripSeparator1";
-            this.toolStripSeparator1.Size = new System.Drawing.Size(177, 6);
+            this.toolStripSeparator1.Size = new System.Drawing.Size(158, 6);
             // 
             // mnuBtExit
             // 
             this.mnuBtExit.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(60)))), ((int)(((byte)(63)))), ((int)(((byte)(65)))));
             this.mnuBtExit.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(220)))), ((int)(((byte)(220)))), ((int)(((byte)(220)))));
             this.mnuBtExit.Name = "mnuBtExit";
-            this.mnuBtExit.Size = new System.Drawing.Size(180, 22);
+            this.mnuBtExit.Size = new System.Drawing.Size(161, 22);
             this.mnuBtExit.Text = "Exit";
             this.mnuBtExit.Click += new System.EventHandler(this.OnMnuExitClick);
             // 
@@ -182,7 +153,6 @@ namespace PBXEdit
             this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(60)))), ((int)(((byte)(63)))), ((int)(((byte)(65)))));
             this.ClientSize = new System.Drawing.Size(1008, 681);
             this.Controls.Add(this.dockPanel);
-            this.Controls.Add(this.toolbarTop);
             this.Controls.Add(this.darkMenuStrip1);
             this.ForeColor = System.Drawing.Color.Gainsboro;
             this.MainMenuStrip = this.darkMenuStrip1;
@@ -190,8 +160,6 @@ namespace PBXEdit
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "PBXEdit";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.OnClosing);
-            this.toolbarTop.ResumeLayout(false);
-            this.toolbarTop.PerformLayout();
             this.darkMenuStrip1.ResumeLayout(false);
             this.darkMenuStrip1.PerformLayout();
             this.ResumeLayout(false);
@@ -202,8 +170,6 @@ namespace PBXEdit
         #endregion
 
         private DarkUI.Docking.DarkDockPanel dockPanel;
-        private DarkUI.Controls.DarkToolStrip toolbarTop;
-        private System.Windows.Forms.ToolStripButton toolStripButton1;
         private DarkUI.Controls.DarkMenuStrip darkMenuStrip1;
         private System.Windows.Forms.ToolStripMenuItem fileToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem openProjectToolStripMenuItem;

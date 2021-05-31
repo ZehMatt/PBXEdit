@@ -32,6 +32,9 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
+  <PropertyGroup>
+    <ApplicationIcon>Icons8-Windows-8-Cultures-Thor-Hammer.ico</ApplicationIcon>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="DarkUI, Version=2.0.1.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\DarkUI.2.0.2\lib\DarkUI.dll</HintPath>
@@ -182,7 +185,9 @@
   <ItemGroup>
     <None Include="Resources\StatusAnnotations_Information_16xMD_color.png" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Content Include="Icons8-Windows-8-Cultures-Thor-Hammer.ico" />
+  </ItemGroup>
   <Import Project="..\PBX\PBX.projitems" Label="Shared" />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

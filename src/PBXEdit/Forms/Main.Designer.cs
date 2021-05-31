@@ -29,6 +29,7 @@ namespace PBXEdit
         /// </summary>
         private void InitializeComponent()
         {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(FormMain));
             this.dockPanel = new DarkUI.Docking.DarkDockPanel();
             this.darkMenuStrip1 = new DarkUI.Controls.DarkMenuStrip();
             this.fileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -155,6 +156,7 @@ namespace PBXEdit
             this.Controls.Add(this.dockPanel);
             this.Controls.Add(this.darkMenuStrip1);
             this.ForeColor = System.Drawing.Color.Gainsboro;
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.MainMenuStrip = this.darkMenuStrip1;
             this.Name = "FormMain";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;

@@ -2,9 +2,9 @@
 
 namespace PBX
 {
-    class Reader
+    internal class Reader
     {
-        string data;
+        private string data;
         public int Position { get; set; }
         public bool EndOfStream { get { return Position >= data.Length; } }
 
@@ -22,9 +22,14 @@ namespace PBX
         {
             Position += count;
             if (Position < 0)
+            {
                 Position = 0;
+            }
+
             if (Position > data.Length)
+            {
                 Position = data.Length;
+            }
         }
 
         public char Peek()

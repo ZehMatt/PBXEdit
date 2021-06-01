@@ -36,7 +36,7 @@ namespace PBX
         public string runOnlyForDeploymentPostprocessing { get; set; }
     }
 
-    static class PBXFileEncoding
+    internal static class PBXFileEncoding
     {
         public const string UTF8 = "4";
     }

@@ -5,30 +5,35 @@ namespace PBX
 {
     using DictionaryList = List<KeyValuePair<string, dynamic>>;
 
-    partial class File
+    public partial class File
     {
-        DictionaryList parse(Reader sr)
+        private DictionaryList Parse(Reader sr)
         {
             while (!sr.EndOfStream)
             {
                 var c = sr.Peek();
                 if (c == '{')
+                {
                     break;
+                }
+
                 sr.Skip();
             }
 
-            return parseDictionary(sr);
+            return ParseDictionary(sr);
         }
 
-        DictionaryList parseDictionary(Reader sr)
+        private DictionaryList ParseDictionary(Reader sr)
         {
             var res = new List<KeyValuePair<string, dynamic>>();
 
             var cur = sr.Read();
             if (cur != '{')
+            {
                 throw new Exception("Dictionary must start with {");
+            }
 
-            skipPadding(sr);
+            SkipPadding(sr);
 
             while (!sr.EndOfStream)
             {
@@ -39,22 +44,22 @@ namespace PBX
                     break;
                 }
 
-                parseDictionary(sr, res);
-                skipPadding(sr);
+                ParseDictionary(sr, res);
+                SkipPadding(sr);
             }
 
             return res;
         }
 
-        string parseKey(Reader sr)
+        private string ParseKey(Reader sr)
         {
-            skipPadding(sr);
+            SkipPadding(sr);
 
             string res = "";
             while (!sr.EndOfStream)
             {
                 var c = sr.Peek();
-                if (isWhitespace(c) || c == ';')
+                if (IsWhitespace(c) || c == ';')
                 {
                     break;
                 }
@@ -62,20 +67,24 @@ namespace PBX
                 res += c;
             }
 
-            skipPadding(sr);
+            SkipPadding(sr);
 
             if (res.Length > 0 && res.StartsWith("\""))
+            {
                 res = res.Substring(1);
+            }
 
             if (res.Length > 0 && res.EndsWith("\""))
+            {
                 res = res.Substring(0, res.Length - 1);
+            }
 
             return res;
         }
 
-        string parseLiteral(Reader sr)
+        private string ParseLiteral(Reader sr)
         {
-            skipPadding(sr);
+            SkipPadding(sr);
 
             string res = "";
             var c = sr.Peek();
@@ -89,9 +98,13 @@ namespace PBX
                     if (c == '"')
                     {
                         if (prev == '\\')
+                        {
                             res += c;
+                        }
                         else
+                        {
                             break;
+                        }
                     }
                     else
                     {
@@ -105,72 +118,90 @@ namespace PBX
                 while (!sr.EndOfStream)
                 {
                     c = sr.Peek();
-                    if (isWhitespace(c) || c == ';' || c == ',')
+                    if (IsWhitespace(c) || c == ';' || c == ',')
+                    {
                         break;
+                    }
+
                     res += c;
                     sr.Skip();
                 }
             }
 
-            skipPadding(sr);
+            SkipPadding(sr);
 
             res = res.Replace("\\\"", "\"");
 
             return res;
         }
 
-        dynamic parseValue(Reader sr)
+        private dynamic ParseValue(Reader sr)
         {
             var c = sr.Peek();
             if (c == '{')
-                return parseDictionary(sr);
+            {
+                return ParseDictionary(sr);
+            }
             else if (c == '(')
-                return parseArray(sr);
-            return parseLiteral(sr);
+            {
+                return ParseArray(sr);
+            }
+
+            return ParseLiteral(sr);
         }
 
-        void parseDictionary(Reader sr, DictionaryList res)
+        private void ParseDictionary(Reader sr, DictionaryList res)
         {
-            var key = parseKey(sr);
+            var key = ParseKey(sr);
 
             var c = sr.Read();
             if (c != '=')
+            {
                 throw new Exception("Expected assignment");
+            }
 
-            skipPadding(sr);
+            SkipPadding(sr);
 
-            dynamic val = parseValue(sr);
+            dynamic val = ParseValue(sr);
 
             c = sr.Peek();
             if (c != ';')
+            {
                 throw new Exception("Expected semicolon after dictionary");
+            }
+
             sr.Skip();
 
             res.Add(new KeyValuePair<string, dynamic>(key, val));
         }
 
-        void parseArray(Reader sr, List<dynamic> res)
+        private void ParseArray(Reader sr, List<dynamic> res)
         {
-            var val = parseValue(sr);
+            var val = ParseValue(sr);
 
             var c = sr.Peek();
             if (c != ',')
+            {
                 throw new Exception("Expected comma after value");
+            }
+
             sr.Skip();
 
             res.Add(val);
         }
 
-        List<dynamic> parseArray(Reader sr)
+        private List<dynamic> ParseArray(Reader sr)
         {
             var res = new List<dynamic>();
 
             var c = sr.Peek();
             if (c != '(')
+            {
                 throw new Exception("Array must start with (");
+            }
 
             sr.Read();
-            skipPadding(sr);
+            SkipPadding(sr);
 
             while (!sr.EndOfStream)
             {
@@ -181,30 +212,33 @@ namespace PBX
                     break;
                 }
 
-                parseArray(sr, res);
-                skipPadding(sr);
+                ParseArray(sr, res);
+                SkipPadding(sr);
             }
 
             return res;
         }
 
-        bool isWhitespace(char c)
+        private bool IsWhitespace(char c)
         {
             return c == ' ' || c == '\t' || c == '\r' || c == '\n';
         }
 
-        void skipWhitespace(Reader sr)
+        private void SkipWhitespace(Reader sr)
         {
             while (!sr.EndOfStream)
             {
                 var cur = sr.Peek();
-                if (!isWhitespace(cur))
+                if (!IsWhitespace(cur))
+                {
                     break;
+                }
+
                 sr.Skip();
             }
         }
 
-        void skipComment(Reader sr)
+        private void SkipComment(Reader sr)
         {
             var offset = sr.Position;
 
@@ -234,11 +268,11 @@ namespace PBX
             sr.Position = offset;
         }
 
-        void skipPadding(Reader sr)
+        private void SkipPadding(Reader sr)
         {
-            skipWhitespace(sr);
-            skipComment(sr);
-            skipWhitespace(sr);
+            SkipWhitespace(sr);
+            SkipComment(sr);
+            SkipWhitespace(sr);
         }
     }
 }

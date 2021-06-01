@@ -8,11 +8,10 @@ namespace PBXEdit
 {
     public partial class FormMain : Form
     {
-        PBX.File projectFile;
-
-        DockProjectTree dockProjectTree;
-        DockTargetTree dockTargetTree;
-        List<DockDocument> documents = new List<DockDocument>();
+        private PBX.File projectFile;
+        private DockProjectTree dockProjectTree;
+        private DockTargetTree dockTargetTree;
+        private readonly List<DockDocument> documents = new List<DockDocument>();
 
         public FormMain()
         {
@@ -29,16 +28,20 @@ namespace PBXEdit
             // input before letting events pass through to the rest of the application.
             Application.AddMessageFilter(dockPanel.DockResizeFilter);
 
-            dockProjectTree = new DockProjectTree();
-            dockProjectTree.DockArea = DarkUI.Docking.DarkDockArea.Left;
-            dockProjectTree.DefaultDockArea = DarkUI.Docking.DarkDockArea.Left;
-            dockProjectTree.Order = 0;
+            dockProjectTree = new DockProjectTree
+            {
+                DockArea = DarkUI.Docking.DarkDockArea.Left,
+                DefaultDockArea = DarkUI.Docking.DarkDockArea.Left,
+                Order = 0
+            };
             dockPanel.AddContent(dockProjectTree, dockPanel.ActiveGroup);
 
-            dockTargetTree = new DockTargetTree();
-            dockTargetTree.DockArea = DarkUI.Docking.DarkDockArea.Left;
-            dockTargetTree.DefaultDockArea = DarkUI.Docking.DarkDockArea.Left;
-            dockTargetTree.Order = 1;
+            dockTargetTree = new DockTargetTree
+            {
+                DockArea = DarkUI.Docking.DarkDockArea.Left,
+                DefaultDockArea = DarkUI.Docking.DarkDockArea.Left,
+                Order = 1
+            };
             dockPanel.AddContent(dockTargetTree, dockPanel.ActiveGroup);
 
             /*
@@ -51,13 +54,17 @@ namespace PBXEdit
             dockPanel.PerformLayout();
         }
 
-        void SetActiveProject()
+        private void SetActiveProject()
         {
             if (dockProjectTree != null)
+            {
                 dockProjectTree.Project = projectFile;
+            }
 
             if (dockTargetTree != null)
+            {
                 dockTargetTree.Project = projectFile;
+            }
         }
 
         public void OpenProject(string file)
@@ -85,7 +92,7 @@ namespace PBXEdit
         {
             try
             {
-                projectFile.save(file);
+                projectFile.Save(file);
             }
             catch (System.Exception)
             {
@@ -97,13 +104,16 @@ namespace PBXEdit
         {
             var res = path.Replace('/', '\\');
             if (res.StartsWith("\\"))
+            {
                 return res.Substring(1);
+            }
+
             return res;
         }
 
         public void OpenDocument(string file)
         {
-            var sourceRoot = projectFile.getSourceRoot();
+            var sourceRoot = projectFile.GetSourceRoot();
             var sanitized = SanitizePath(file);
             var fullPath = Path.Combine(sourceRoot, sanitized);
 
@@ -121,15 +131,17 @@ namespace PBXEdit
         }
 
         #region Menu Handlers
-        void OnMenuOpenProjectClick(object sender, System.EventArgs e)
+        private void OnMenuOpenProjectClick(object sender, System.EventArgs e)
         {
             if (openFileDlg.ShowDialog() != DialogResult.OK)
+            {
                 return;
+            }
 
             OpenProject(openFileDlg.FileName);
         }
 
-        void OnMenuCloseProjectClick(object sender, System.EventArgs e)
+        private void OnMenuCloseProjectClick(object sender, System.EventArgs e)
         {
             projectFile = null;
             SetActiveProject();
@@ -147,7 +159,9 @@ namespace PBXEdit
         private void OnClickSaveAs(object sender, System.EventArgs e)
         {
             if (saveFileDlg.ShowDialog() != DialogResult.OK)
+            {
                 return;
+            }
 
             SaveProject(saveFileDlg.FileName);
         }
@@ -164,9 +178,13 @@ namespace PBXEdit
         private void OnDockControlRemoved(object sender, ControlEventArgs e)
         {
             if (e.Control == dockProjectTree)
+            {
                 dockProjectTree = null;
+            }
             else if (e.Control == dockTargetTree)
+            {
                 dockTargetTree = null;
+            }
             else if (e.Control is DockDocument)
             {
                 documents.Remove(e.Control as DockDocument);
@@ -184,9 +202,13 @@ namespace PBXEdit
         private void OnContentRemoved(object sender, DarkUI.Docking.DockContentEventArgs e)
         {
             if (e.Content == dockProjectTree)
+            {
                 dockProjectTree = null;
+            }
             else if (e.Content == dockTargetTree)
+            {
                 dockTargetTree = null;
+            }
             else if (e.Content is DockDocument)
             {
                 documents.Remove(e.Content as DockDocument);

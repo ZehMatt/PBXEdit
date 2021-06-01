@@ -2,11 +2,11 @@
 
 namespace PBX
 {
-    class Writer
+    internal class Writer
     {
-        StreamWriter sw;
-        int indent = 0;
-        bool inlineScope = false;
+        private StreamWriter sw;
+        private int indent = 0;
+        private bool inlineScope = false;
 
         public Writer(StreamWriter stream)
         {
@@ -34,7 +34,10 @@ namespace PBX
         public void WriteIndent()
         {
             if (inlineScope)
+            {
                 return;
+            }
+
             for (int i = 0; i < indent; ++i)
             {
                 sw.Write('\t');
@@ -44,16 +47,23 @@ namespace PBX
         public void NewLine()
         {
             if (!inlineScope)
+            {
                 sw.Write("\n");
+            }
             else
+            {
                 sw.Write(" ");
+            }
         }
 
         public void BeginScope()
         {
             sw.Write("{");
             if (!inlineScope)
+            {
                 NewLine();
+            }
+
             indent++;
         }
 
@@ -68,7 +78,10 @@ namespace PBX
         {
             sw.Write("(");
             if (!inlineScope)
+            {
                 NewLine();
+            }
+
             indent++;
         }
 

@@ -7,6 +7,11 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Editor", "PBXEdit\Editor.cs
 EndProject
 Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "PBX", "PBX\PBX.shproj", "{7874F05C-1B9D-4818-BF62-4A72DBB5B5F6}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{D9C9181B-BD06-44B1-96F3-0A199DD16434}"
+	ProjectSection(SolutionItems) = preProject
+		.editorconfig = .editorconfig
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
 		PBX\PBX.projitems*{7874f05c-1b9d-4818-bf62-4a72dbb5b5f6}*SharedItemsImports = 13
